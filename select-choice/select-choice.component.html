@@ -1,0 +1,30 @@
+<div class="select-box-container">
+    <span class="select-box-prompt" *ngIf="label" id="{{name}}-label">{{label}}</span>
+    <div class="select-box-dropdown" (click)="toggleChoices($event)"
+         [ngClass]="{'active': state==='active'}"
+        tabindex="1" aria-haspopup="listbox" aria-roledescription="listbox"
+        [attr.aria-label]="label" [attr.aria-expanded]="isActive()" [attr.aria-controls]="name"
+        [(appListVisibility)]="state">
+        <div class="select-item">
+            <div class="select-text">
+                <div class="text-container">
+                    <span *ngIf="selected === null" class="select-box-prompt">{{place_holder}}</span>
+                    <span *ngIf="selected !== null" class="select-box-prompt">{{selected["display"]}}</span>
+                </div>
+                <div class="icon-container">
+                    <i class="material-icons">keyboard_arrow_down</i>
+                </div>
+            </div>
+        </div>
+        <ul class="select-dropdown" [@toggleDropdown]="state"
+            id="{{name}}" tabindex="1" role="listbox" *ngIf="isActive()"
+            (focusout)="leftFocus($event)">
+            <li *ngFor="let item of choices; let i = index" id="{{item['name']}}"
+                value="{{item['value']}}" class="select-choice"
+                (click)="selectChoice(item)" role="option"
+                [attr.tabindex]="i + 2">
+                {{item['display']}}
+            </li>
+        </ul>
+    </div>
+</div>
