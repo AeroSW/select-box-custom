@@ -1,7 +1,9 @@
-import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, Input, Output, EventEmitter, ViewChildren, QueryList, AfterViewInit, ElementRef} from '@angular/core';
 import {trigger, state, style, animate, transition} from '@angular/animations';
 
-import {SelectChoice, example_choices} from "./choice";
+import {SelectChoice, example_choices, StateActivity} from "./choice";
+import {ItemVisibilityDirective} from './directives/accessibility/item-visibility/item-visibility.directive';
+import {createViewChildren} from '@angular/compiler/src/core';
 
 @Component({
     selector: 'app-select-choice',
@@ -9,11 +11,11 @@ import {SelectChoice, example_choices} from "./choice";
     styleUrls: ['./select-choice.component.scss'],
     animations: [
         trigger('toggleDropdown', [
-            state('inactive', style({
+            state(StateActivity.INACTIVE, style({
                 height: '0',
                 opacity: 0
             })),
-            state('active', style({
+            state(StateActivity.ACTIVE, style({
                 height: '*',
                 opacity: 1
             })),
@@ -22,10 +24,12 @@ import {SelectChoice, example_choices} from "./choice";
         ])
     ]
 })
-export class SelectChoiceComponent implements OnInit {
+export class SelectChoiceComponent implements OnInit, AfterViewInit {
     private choices: Array<SelectChoice>;
     private selected: SelectChoice;
-    private state: string;
+    private state: StateActivity;
+    private ref_list: Array<ElementRef>;
+    @ViewChildren(ItemVisibilityDirective, {read: ElementRef}) private choice_list: QueryList<any>;
     @Input() place_holder: string;
     @Input() value: any;
     @Input() name: string;
@@ -36,9 +40,19 @@ export class SelectChoiceComponent implements OnInit {
         this.choices = example_choices;
         this.name = "Example-Dropdown";
         this.selected = null;
-        this.state = 'inactive';
+        this.state = StateActivity.INACTIVE;
         this.place_holder = "Please select an option.";
         this.label = "Hello World";
+        this.ref_list = [];
+    }
+    ngAfterViewInit() {
+        this.choice_list.changes.subscribe(choices => {
+            console.log(choices.length + " Hello");
+            choices.forEach(element => {
+                this.ref_list.push(element);
+                console.log(element);
+            });
+        });
     }
     selectChoice(new_selection: SelectChoice) {
         if(this.selected != new_selection)
@@ -46,13 +60,16 @@ export class SelectChoiceComponent implements OnInit {
     }
     toggleChoices(e) {
         e.preventDefault();
-        this.state = (this.state === 'active') ? 'inactive' : 'active';
+        this.state = (this.state === StateActivity.INACTIVE) ? StateActivity.ACTIVE : StateActivity.INACTIVE;
     }
     leftFocus(e) {
         e.preventDefault();
-        this.state = 'inactive';
+        this.state = StateActivity.INACTIVE;
     }
     isActive() {
-        return this.state === 'active';
+        return this.state === StateActivity.ACTIVE;
+    }
+    private updateItemsVisible() {
+        
     }
 }

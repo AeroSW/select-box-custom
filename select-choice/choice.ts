@@ -13,3 +13,7 @@ export const example_choices: Array<SelectChoice> = [
     {name: "B", display: "B", value: "B", reader: "B"},
     {name: "C", display: "C", value: "C", reader: "C"}
 ];
+export enum StateActivity {
+    ACTIVE = "active",
+    INACTIVE = "inactive"
+};

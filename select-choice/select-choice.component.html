@@ -2,9 +2,10 @@
     <span class="select-box-prompt" *ngIf="label" id="{{name}}-label">{{label}}</span>
     <div class="select-box-dropdown" (click)="toggleChoices($event)"
          [ngClass]="{'active': state==='active'}"
-        tabindex="1" aria-haspopup="listbox" aria-roledescription="listbox"
-        [attr.aria-label]="label" [attr.aria-expanded]="isActive()" [attr.aria-controls]="name"
-        [(appListVisibility)]="state">
+         tabindex="0" aria-haspopup="listbox" aria-roledescription="listbox"
+         [attr.aria-label]="label" [attr.aria-expanded]="isActive()" [attr.aria-controls]="name"
+         [(appListVisibility)]="state" [list_elements]="ref_list" [selected]="selected"
+         [select_list]="choices">
         <div class="select-item">
             <div class="select-text">
                 <div class="text-container">
@@ -17,12 +18,12 @@
             </div>
         </div>
         <ul class="select-dropdown" [@toggleDropdown]="state"
-            id="{{name}}" tabindex="1" role="listbox" *ngIf="isActive()"
-            (focusout)="leftFocus($event)">
+            id="{{name}}" tabindex="1" role="listbox" *ngIf="isActive()">
             <li *ngFor="let item of choices; let i = index" id="{{item['name']}}"
                 value="{{item['value']}}" class="select-choice"
                 (click)="selectChoice(item)" role="option"
-                [attr.tabindex]="i + 2">
+                [attr.tabindex]="0" [appItemVisibility]="item" [(selected)]="selected"
+                [html_list]="ref_list" [choices]="choices">
                 {{item['display']}}
             </li>
         </ul>
