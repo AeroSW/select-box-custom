@@ -6,3 +6,8 @@ export enum KeyCode{
     UP_ARROW = 38,
     ESCAPE = 27
 };
+export enum Direction{
+    UP = -1,
+    NONE = 0,
+    DOWN = 1
+};

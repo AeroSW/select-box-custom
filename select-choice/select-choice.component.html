@@ -1,11 +1,9 @@
 <div class="select-box-container">
     <span class="select-box-prompt" *ngIf="label" id="{{name}}-label">{{label}}</span>
-    <div class="select-box-dropdown" (click)="toggleChoices($event)"
-         [ngClass]="{'active': state==='active'}"
-         tabindex="0" aria-haspopup="listbox" aria-roledescription="listbox"
+    <div class="select-box-dropdown" (click)="toggleChoices($event)" [ngClass]="{'active': state==='active'}"
+         [attr.tabindex]="0"  role="combobox"
          [attr.aria-label]="label" [attr.aria-expanded]="isActive()" [attr.aria-controls]="name"
-         [(appListVisibility)]="state" [list_elements]="ref_list" [selected]="selected"
-         [select_list]="choices">
+         [(appListVisibility)]="state" [selected]="selected" [choices]="choices" (updateFocus)="updateFocus($event)">
         <div class="select-item">
             <div class="select-text">
                 <div class="text-container">
@@ -17,13 +15,11 @@
                 </div>
             </div>
         </div>
-        <ul class="select-dropdown" [@toggleDropdown]="state"
-            id="{{name}}" tabindex="1" role="listbox" *ngIf="isActive()">
-            <li *ngFor="let item of choices; let i = index" id="{{item['name']}}"
-                value="{{item['value']}}" class="select-choice"
-                (click)="selectChoice(item)" role="option"
-                [attr.tabindex]="0" [appItemVisibility]="item" [(selected)]="selected"
-                [html_list]="ref_list" [choices]="choices">
+        <ul class="select-dropdown" [@toggleDropdown]="state" id="{{name}}" *ngIf="isActive()">
+            <li *ngFor="let item of choices; let i = index" id="{{item['name']}}-{{i}}" value="{{item['value']}}" class="select-choice"
+                [attr.activedescendant]="i === focus" [attr.aria-selected]="item === selected" [attr.aria-label]="item['display']"
+                (click)="selectChoice(item)" role="option" [attr.tabindex]="0" appItemVisibility
+                [choice]="item" [choices]="choices" (updateFocus)="updateFocus($event)" (updateChoice)="selectChoice($event)" #option>
                 {{item['display']}}
             </li>
         </ul>

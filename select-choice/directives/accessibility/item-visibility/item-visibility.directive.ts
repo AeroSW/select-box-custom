@@ -1,17 +1,15 @@
 import {Directive, HostListener, Input, Output, EventEmitter, ElementRef} from '@angular/core';
 import {SelectChoice} from '../../../choice';
-import {KeyCode} from '../key-code';
+import {Direction, KeyCode} from '../key-code';
 
 @Directive({
   selector: '[appItemVisibility]'
 })
 export class ItemVisibilityDirective {
-    @Input("appItemVisibility") item: SelectChoice;
-    //@Output("appItemVisibilityChange") itemChange: EventEmitter<SelectChoice> = new EventEmitter<SelectChoice>();
-    @Input() selected: SelectChoice;
-    @Output() selectedChange: EventEmitter<SelectChoice> = new EventEmitter<SelectChoice>();
+    @Input() choice: SelectChoice;
     @Input() choices: Array<SelectChoice>;
-    @Input() html_list: Array<ElementRef>;
+    @Output() updateFocus: EventEmitter<Direction> = new EventEmitter<Direction>();
+    @Output() updateChoice: EventEmitter<SelectChoice> = new EventEmitter<SelectChoice>();
     constructor() { }
     @HostListener("keydown.enter", ["$event"])
     @HostListener("keydown.space", ["$event"])
@@ -28,23 +26,19 @@ export class ItemVisibilityDirective {
     }
     
     private _selectChoice() {
-        if(this.item !== this.selected) {
-            this.selected = this.item;
-            this.selectedChange.emit(this.selected);
-        }
+        this.updateChoice.emit(this.choice);
     }
     private _navigateChoices(code) {
-        console.log("Hey Mom!");
-        let index = this.choices.indexOf(this.item);
-        console.log("index: " + index);
-        console.log(this.html_list);
-        if(code === KeyCode.UP_ARROW && index > 0) {
-            let html = this.html_list[index - 1].nativeElement as HTMLElement;
-            html.focus();
-        }
-        else if(code === KeyCode.DOWN_ARROW && index < (this.choices.length - 1)) {
-            let html = this.html_list[index + 1].nativeElement as HTMLElement;
-            html.focus();
+        if(this.choices.length > 0) {
+            let index = this.choices.indexOf(this.choice);
+            if(index !== -1) {
+                if(code === KeyCode.UP_ARROW) {
+                    this.updateFocus.emit(Direction.UP);
+                }
+                else if(code === KeyCode.DOWN_ARROW) {
+                    this.updateFocus.emit(Direction.DOWN);
+                }
+            }
         }
     }
 }
